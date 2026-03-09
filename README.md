@@ -81,13 +81,13 @@ ed 's/\t/\n/g' | nl -ba
 
 # Now create a master file containing all the metadata (both from drainage and non dranagie)
 # First add the header
-head -n 1 data/metadata/NCBI.mine.drainage.metagenome.sampleID_full_metadata.tsv > data/metadata/all_mine_metadata.tsv
+head -n 1 data/metadata/NCBI.mine.drainage.metagenome.sampleID_full_metadata.tsv > data/metadata/all_metadata.tsv
 
 # Second add the data from the drainage
-tail -n +2 data/metadata/NCBI.mine.drainage.metagenome.sampleID_full_metadata.tsv >> data/metadata/all_mine_metadata.tsv
+tail -n +2 data/metadata/NCBI.mine.drainage.metagenome.sampleID_full_metadata.tsv >> data/metadata/all_metadata.tsv
 
 # Lastly, add the data from the general mine metagonome
-tail -n +2 data/metadata/NCBI.mine.metagenome.sampleID_full_metadata.tsv >> data/metadata/all_mine_metadata.tsv
+tail -n +2 data/metadata/NCBI.mine.metagenome.sampleID_full_metadata.tsv >> data/metadata/all_metadata.tsv
 ```
 
 ### 2. Data filtering
