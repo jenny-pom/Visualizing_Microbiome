@@ -92,20 +92,25 @@ tail -n +2 data/metadata/NCBI.mine.metagenome.sampleID_full_metadata.tsv >> data
 
 ### 2. Data filtering
 Start filtering the data, this project will only work with WGS (shotgun) data.
-We filter:
-1. 
-2. 
-3. 
-
 **Date:** 2026-03-09
 **Command run:**
 ```bash
+chmod +x remove_amplicon.py
+
+python scripts/remove_amplicon.py 
 
 ```
 
+### 3. TASK 2 - Geographical Distrbution Visualization
+Make a script that visualise the number of samples over geographical distrubution.
+**Date:** 2026-03-10
+**Command run:**
+```bash
+# Count the actual number of uniq countries
+cut -f55 data/metadata/mine_shotgun_only.tsv | tail -n +2 | sort | uniq | wc -l
 
+```
 
-### 3. Geographical Distrbution Analysis
 
 ### 3. Sequence Stratgy Analysis
 
