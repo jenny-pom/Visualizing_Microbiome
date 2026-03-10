@@ -106,13 +106,34 @@ Make a script that visualise the number of samples over geographical distrubutio
 **Date:** 2026-03-10
 **Command run:**
 ```bash
-# Count the actual number of uniq countries
-cut -f55 data/metadata/mine_shotgun_only.tsv | tail -n +2 | sort | uniq | wc -l
+# Count the actual number of uniq countries by running count_contries.py, this is good to know before plotting.
+python scripts/count_countries.py 
 
+Number of unique locations (including provinces): 46
+Number of actual countries: 10
+
+--- Top 5 Countries ---
+clean_country
+China             160
+USA               121
+Brazil             25
+Canada             15
+United Kingdom     11
+Name: count, dtype: int64
+
+#Run script to generate a barplot of sample geographical distribution
+python scripts/task_2.py
 ```
+### 3. TASK 3 - 16S rRNA amplicon vs shotgun metagenome
+**Date:** 2026-03-10
+**Command run:**
+```bash
+# Take the first file including header
+cat data/metadata/NCBI.mine.drainage.metagenome.sampleID_metadata.tsv > data/sample_IDs/all_mina_samples.tsv
 
-
-### 3. Sequence Stratgy Analysis
+# Take the next file (without header) and add it. 
+tail -n +2 data/metadata/NCBI.mine.metagenome.sampleID_metadata.tsv >> data/sample_IDs/all_mine_samples.tsv
+```
 
 ### 4. Interactive Sample Map
 

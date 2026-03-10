@@ -18,7 +18,7 @@ plt.figure(figsize=(12, 7))
 sns.barplot(x=country_counts.index, y=country_counts.values, palette='viridis')
 
 # Add titles and labels
-plt.title('Number of Shotgun Metagenome Samples per Country (Task 2)', fontsize=16, pad=20)
+plt.title('Number of Shotgun Metagenome Samples per Country', fontsize=16, pad=20)
 plt.xlabel('Country', fontsize=12)
 plt.ylabel('Number of Samples', fontsize=12)
 
