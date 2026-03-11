@@ -94,6 +94,7 @@ tail -n +2 data/metadata/NCBI.mine.drainage.metagenome.sampleID_full_metadata.ts
 # Lastly, add the data from the general mine metagonome  
 tail -n +2 data/metadata/NCBI.mine.metagenome.sampleID_full_metadata.tsv >> data/metadata/all_metadata.tsv  
 ```
+---
 
 ### 2. Data filtering  
 Start filtering the data, this project will only work with WGS (shotgun) data.  
@@ -104,6 +105,7 @@ chmod +x remove_amplicon.py
 
 python scripts/remove_amplicon.py  
 ```
+---
 
 ### 3. TASK 2 - Geographical Distrbution Visualization  
 Make a script that visualise the number of samples over geographical distrubution.  
@@ -128,6 +130,9 @@ Name: count, dtype: int64
 #Run script to generate a barplot of sample geographical distribution  
 python scripts/task_2.py  
 ```  
+---
+
+
 ### 3. TASK 3 - 16S rRNA amplicon vs shotgun metagenome  
 **Date:** 2026-03-10  
 **Command run:**  
@@ -136,6 +141,8 @@ nano task_3.py
 chmod +x task_3  
 python scripts/task_3.py   
 ```
+---
+
 ### 4. TASK 4 - Interactive Sample Map  
 **Date:** 2026-03-10  
 **Command run:**  
@@ -144,6 +151,7 @@ nano task_4.py
 chmod +x task_4  
 python scripts/task_4.py  
 ```
+---
 
 ### 5. Add Streamlit  
 **Date:** 2026-03-10  
@@ -154,10 +162,10 @@ nano my_bioinfo_app.py
 chmod +x bioinfo_app.py  
 streamlit run scripts/my_bioinfo_app.py  
 ```  
+---
 
 ### 6. Sample Selection, FASTq quality control and trimming   
 There where no WGS samples from Sweden so instead samples from 3 different countries in Europe were selceted:  
-
 1. **SRR5169068**   
 Country - Germany: Drei Kronen und Ehrt (Harz Mountains)  
 Read count - 146909573  
@@ -179,10 +187,9 @@ Description - DNBSEQ-T7 sequencing: DNA-Seq of metagenome: mine water
 Library strategy - WGS  
 Library layout - SINGLE  
 
-## Bioinformatic Pipeline
+**Bioinformatic Pipeline**
 1.  **QC:** FastQC v0.11.9
 2.  **Processing:** `fastp` for adapter removal and quality filtering
-
 **Date:** 2026-03-10  
 **Command run:**  
 ```bash  
@@ -214,14 +221,12 @@ nohup curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR347/071/SRR34737771/SRR34737
 mkdir -p data/raw_fastq_data/quality_control  
 # Do fastqc on the raw fastq files before continuing with making Krona plots  
 fastqc ../*.fastq.gz -o .  
-
 ```
-### Quality Control Summary  
+#### Quality Control Summary  
 This section documents the initial quality assessment of the metagenomic samples using **FastQC**.  
 #### Sample SRR30914511 (United Kingdom)  
 **Type:** Paired-end | **Status:** Action Required (Trimming)  
 Overall high base-call accuracy, but technical artifacts were identified in the reverse strand and adapter contamination in the forward strand.    
- 
 | Metric | Value |  
 | :--- | :--- |  
 | **Total Sequences** | 50,713,785 |  
@@ -237,8 +242,6 @@ Overall high base-call accuracy, but technical artifacts were identified in the 
 
 > **Decision:** Trimming conducted using `fastp` to remove adapters and filter out Poly-N/low-quality segments before MetaPhlAn analysis.  
 
----
-
 #### Sample SRR34737771 (Slovakia)  
 **Type:** Single-end | **Status:** Passed  
 
@@ -251,11 +254,9 @@ Excellent quality data. No adapters detected and zero sequences flagged as poor 
 | **GC Content** | 54% |
 
 > **Decision:** No trimming required. Proceeding directly to taxonomic profiling with raw data.  
-
----
   
 #### Sample SRR5169068 (Germany)  
-**Type:** Paired-end | **Status:** Passed / Minor Cleaning  
+**Type:** Paired-end | **Status:** Passed   
 
 This is the largest dataset in the project. The sequences are shorter (51 bp) but show high consistency.  
 
@@ -265,20 +266,90 @@ This is the largest dataset in the project. The sequences are shorter (51 bp) bu
 | **Sequence Length** | 51 bp |  
 | **GC Content** | 44% |  
 
-> **Decision:** Quality is high, but a light cleaning pass is performed to ensure consistency with the other paired-end samples in the pipeline.  
+> **Decision:** Quality is high, but a light cleaning pass could be performed to ensure consistency with the other paired-end samples in the pipeline. However, due to time constraints, this step will not be performed.
 
+```bash
+# Perform trimming of SRR30914511 using fastp
+mkdir -p data/trimmed_data_SRR30914511
+
+# Make a quality control envirolment
+conda create -n qc_env -c bioconda fastp -y
+conda activate qc_env
+fastp --version
+# fastp 0.23.4
+
+# Start filtering  
+fastp -i data/raw_fastq_data/SRR30914511_1.fastq.gz \
+      -I data/raw_fastq_data/SRR30914511_2.fastq.gz \
+      -o data/trimmed_data_SRR30914511/SRR30914511_1_trimmed.fastq.gz \
+      -O data/trimmed_data_SRR30914511/SRR30914511_2_trimmed.fastq.gz \
+      --detect_adapter_for_pe \ # Finds adaptor
+      --trim_poly_g \ # Removes lost signal addition of G
+      --thread 4 \
+      --html results/qc/fastp_SRR30914511.html \ # Will generate report
+      --json results/qc/fastp_SRR30914511.json
+```
+#### Trimming Results (fastp)  
+| Metric | Before Trimming | After Trimming |  
+| :--- | :--- | :--- |  
+| **Total Reads** | 101,427,570 | 100,658,838 (99.2%) |  
+| **Total Bases** | 25.46 Gb | 24.91 Gb |  
+| **Q30 Bases (%)** | 91.46% (avg) | 92.00% (avg) |  
+| **Adapter Trimmed Reads** | - | 11,718,317 (11.5%) |  
+| **Duplication Rate** | - | 15.84% |  
+
+**Filtering Details:**  
+* **Low quality:** 590,396 reads removed.  
+* **Too many Ns:** 44,690 reads removed.  
+* **Too short:** 133,646 reads removed.  
+* **Bases trimmed due to adapters:** 356,999,865 bp.  
+
+> **Summary:** The trimming successfully removed over 350 MB of adapter sequences while retaining 99.2% of the total reads. The Q30 score improved, providing high-quality input for taxonomic profiling.  
 ---
 
-### 7 Krona Visualization  
+### 7 MetaPhlAn Taxonomic Analysis  
 **Date:** 2026-03-10  
 **Command run:**  
 ```bash  
 ###### Start Taxonomic Analysis #######  
 # Make a directory for the taxonomy result  
 mkdir -p results/taxonomy  
+conda activate metaphlan_env # Eller vad din miljö heter
+
+mkdir -p results/profiling
+
+# Sample from England
+metaphlan data/trimmed_data_SRR30914511/SRR30914511_1_trimmed.fastq.gz,data/trimmed_data_SRR30914511/SRR30914511_2_trimmed.fastq.gz \
+          --input_type fastq \
+          --add_viruses \
+          --bowtie2out results/profiling/SRR30914511.bowtie2.bz2 \
+          --nproc 8 \
+          -o results/profiling/SRR30914511_profile.txt
+
+
+# Slovakia
+metaphlan data/raw_fastq_data/SRR34737771.fastq.gz \
+          --input_type fastq \
+          --add_viruses \
+          --bowtie2out results/profiling/SRR34737771.bowtie2.bz2 \
+          --nproc 8 \
+          -o results/profiling/SRR34737771_profile.txt
+
+
+# Germany
+metaphlan data/raw_fastq_data/SRR5169068_1.fastq.gz,data/raw_fastq_data/SRR5169068_2.fastq.gz \
+          --input_type fastq \
+          --add_viruses \
+          --bowtie2out results/profiling/SRR5169068.bowtie2.bz2 \
+          --nproc 8 \
+          -o results/profiling/SRR5169068_profile.txt
+
 ```
+---
 
 ### 8. Integration with Interactive Map  
+
+
 
 ## Project structure  
 
