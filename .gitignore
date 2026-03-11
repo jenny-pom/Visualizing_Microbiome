@@ -3,3 +3,6 @@ results/logs/
 *.html
 *.log
 .DS_Store
+*fastq.gz
+*fastq.zip
+*.out

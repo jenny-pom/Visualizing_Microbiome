@@ -173,73 +173,85 @@ Library strategy - WGS
 Library layout - PAIRED  
 
 3. **SRR34737771**  
-Country - Slovakia: Roznava
-Read count - 17628455
-Description - DNBSEQ-T7 sequencing: DNA-Seq of metagenome: mine water
-Library strategy - WGS
-Library layout - SINGLE
+Country - Slovakia: Roznava  
+Read count - 17628455  
+Description - DNBSEQ-T7 sequencing: DNA-Seq of metagenome: mine water  
+Library strategy - WGS  
+Library layout - SINGLE  
 
-**Date:** 2026-03-10
-**Command run:**
-```bash
-# After selecting samples, I ran this to same the metadata in an index text file
-paste <(head -n 1 data/metadata/all_metadata.tsv | tr '\t' '\n') <(grep "SRR5169068" data/me
-tadata/all_metadata.tsv | tr '\t' '\n') | cat -n > data/selected_samples_WGS/SRR5169068_index.txt
+**Date:** 2026-03-10  
+**Command run:**  
+```bash  
+# After selecting samples, I ran this to same the metadata in an index text file  
+paste <(head -n 1 data/metadata/all_metadata.tsv | tr '\t' '\n') <(grep "SRR5169068" data/me  
+tadata/all_metadata.tsv | tr '\t' '\n') | cat -n > data/selected_samples_WGS/SRR5169068_index.txt  
 
-paste <(head -n 1 data/metadata/all_metadata.tsv | tr '\t' '\n') <(grep "SRR34737771" data/me
-tadata/all_metadata.tsv | tr '\t' '\n') | cat -n > data/selected_samples_WGS/SRR34737771_index.txt
+paste <(head -n 1 data/metadata/all_metadata.tsv | tr '\t' '\n') <(grep "SRR34737771" data/me  
+tadata/all_metadata.tsv | tr '\t' '\n') | cat -n > data/selected_samples_WGS/SRR34737771_index.txt  
 
-paste <(head -n 1 data/metadata/all_metadata.tsv | tr '\t' '\n') <(grep "SRR30914511" data/me
-tadata/all_metadata.tsv | tr '\t' '\n') | cat -n > data/selected_samples_WGS/SRR30914511_index.txt
+paste <(head -n 1 data/metadata/all_metadata.tsv | tr '\t' '\n') <(grep "SRR30914511" data/me  
+tadata/all_metadata.tsv | tr '\t' '\n') | cat -n > data/selected_samples_WGS/SRR30914511_index.txt  
 
-conda install -c bioconda metaphlan krona -y
+conda install -c bioconda metaphlan krona -y  
 
-# Make a directory for the raw fastq data
-mkdir -p data/raw_data
+# Make a directory for the raw fastq data  
+mkdir -p data/raw_data  
 
-# Download the fastaq data
-# SRR5169068 (Germany)
-nohup curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR516/008/SRR5169068/SRR5169068_2.fastq.gz -o data/raw_fastq_data/SRR5169068_2.fastq.gz > download_SRR5169068_2.log 2>&1 &
-nohup curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR516/008/SRR5169068/SRR5169068_1.fastq.gz -o data/raw_fastq_data/SRR5169068_1.fastq.gz > download_SRR5169068_1.log 2>&1 &
-# SRR30914511 (England) 
-nohup sh -c 'curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR309/011/SRR30914511/SRR30914511_1.fastq.gz -o data/raw_fastq_data/SRR30914511_1.fastq.gz && curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR309/011/SRR30914511/SRR30914511_2.fastq.gz -o data/raw_fastq_data/SRR30914511_2.fastq.gz' > download_SRR30914511.log 2>&1 &
-# SRR34737771 (Slovakia)
-nohup curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR347/071/SRR34737771/SRR34737771.fastq.gz -o data/raw_fastq_data/SRR34737771.fastq.gz > data/raw_fastq_data/download_SRR34737771.log 2>&1 &
+# Download the fastaq data  
+# SRR5169068 (Germany)  
+nohup curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR516/008/SRR5169068/SRR5169068_2.fastq.gz -o data/raw_fastq_data/SRR5169068_2.fastq.gz > download_SRR5169068_2.log 2>&1 &  
+nohup curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR516/008/SRR5169068/SRR5169068_1.fastq.gz -o data/raw_fastq_data/SRR5169068_1.fastq.gz > download_SRR5169068_1.log 2>&1 &  
+# SRR30914511 (England)   
+nohup sh -c 'curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR309/011/SRR30914511/SRR30914511_1.fastq.gz -o data/raw_fastq_data/SRR30914511_1.fastq.gz && curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR309/011/SRR30914511/SRR30914511_2.fastq.gz -o data/raw_fastq_data/SRR30914511_2.fastq.gz' > download_SRR30914511.log 2>&1 &  
+# SRR34737771 (Slovakia)  
+nohup curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR347/071/SRR34737771/SRR34737771.fastq.gz -o data/raw_fastq_data/SRR34737771.fastq.gz > data/raw_fastq_data/download_SRR34737771.log 2>&1 &  
 
-# Make a directory for quality control
-mkdir -p data/raw_fastq_data/quality_control
-# Do fastqc on the raw fastq files before continuing with making Krona plots
-fastqc ../*.fastq.gz -o .
+# Make a directory for quality control  
+mkdir -p data/raw_fastq_data/quality_control  
+# Do fastqc on the raw fastq files before continuing with making Krona plots  
+fastqc ../*.fastq.gz -o .  
 
-####################################### QUALITY ######################################
-############################## Sample SRR30914511 (paired) ###########################
-# Overall good quality
-# Overrepresent sequences for forward strand: 
+####################################### QUALITY ######################################  
+############################## Sample SRR30914511 (paired) ###########################  
+######################################################################################
+# Overall good quality  
+# Overrepresent sequences for forward strand:   
 | Sequence                                          | Count | Percentage           | Possible Source                              |
 |--------------------------------------------------|------:|---------------------:|-----------------------------------------------|
 | GATCGGAAGAGCACACGTCTGAACTCCAGTCACCTTGTAATCTCGTATGC | 55865 | 0.11015742563880807 | TruSeq Adapter, Index 12 (100% over 50bp) |
-# Overrepresent sequences for reverese strand: 
+
+# Overrepresent sequences for reverese strand:    
 | Sequence                                           | Count  | Percentage           | Possible Source                                      |
 |----------------------------------------------------|-------:|---------------------:|------------------------------------------------------|
 | NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN | 110166 | 0.21723087716682948 | No Hit                                               |
 | GATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCG | 57880  | 0.1141307043045594  | Illumina Single End PCR Primer 1 (100% over 50bp)   |
-# Could run against Metaadapter immidiently but migth trim it. 
+# Trimming will be conducted on the adapter sequences. 
+
+####################################### QUALITY ######################################  
+############################## Sample SRR34737771 (single) ###########################  
+######################################################################################
+# No trimming needed. 
+
+####################################### QUALITY ######################################  
+############################## Sample SRR5169068 (paired) ###########################  
+######################################################################################
+
 
 ```
 
-### 7 Krona Visualization
-**Date:** 2026-03-10
-**Command run:**
-```bash
-###### Start Taxonomic Analysis #######
-# Make a directory for the taxonomy result
-mkdir -p results/taxonomy
+### 7 Krona Visualization  
+**Date:** 2026-03-10  
+**Command run:**  
+```bash  
+###### Start Taxonomic Analysis #######  
+# Make a directory for the taxonomy result  
+mkdir -p results/taxonomy  
 ```
 
-### 8. Integration with Interactive Map
+### 8. Integration with Interactive Map  
 
-## Project structure
+## Project structure  
 
-## References
-TODO!!! Add more before hand-in
-https://doi.org/10.1038/s41587-023-01688-w
+## References  
+TODO!!! Add more before hand-in  
+https://doi.org/10.1038/s41587-023-01688-w  
