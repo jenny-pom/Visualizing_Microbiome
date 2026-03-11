@@ -1,4 +1,4 @@
-# Visualising the Skin Microbiome  
+# Visualising the Mine Microbiome  
 Exploring the publicly available  mine mic## References  
 OBS!! Add more before hand-in  
 https://doi.org/10.1038/s41587-023-01688-wrobiome dataset to alayse geographical disrtibution and microbial composition using metagenomic and shotgun sequenced data.  
@@ -179,6 +179,10 @@ Description - DNBSEQ-T7 sequencing: DNA-Seq of metagenome: mine water
 Library strategy - WGS  
 Library layout - SINGLE  
 
+## Bioinformatic Pipeline
+1.  **QC:** FastQC v0.11.9
+2.  **Processing:** `fastp` for adapter removal and quality filtering
+
 **Date:** 2026-03-10  
 **Command run:**  
 ```bash  
@@ -211,33 +215,69 @@ mkdir -p data/raw_fastq_data/quality_control
 # Do fastqc on the raw fastq files before continuing with making Krona plots  
 fastqc ../*.fastq.gz -o .  
 
-####################################### QUALITY ######################################  
-############################## Sample SRR30914511 (paired) ###########################  
-######################################################################################
-# Overall good quality  
-# Overrepresent sequences for forward strand:   
-| Sequence                                          | Count | Percentage           | Possible Source                              |
-|--------------------------------------------------|------:|---------------------:|-----------------------------------------------|
-| GATCGGAAGAGCACACGTCTGAACTCCAGTCACCTTGTAATCTCGTATGC | 55865 | 0.11015742563880807 | TruSeq Adapter, Index 12 (100% over 50bp) |
-
-# Overrepresent sequences for reverese strand:    
-| Sequence                                           | Count  | Percentage           | Possible Source                                      |
-|----------------------------------------------------|-------:|---------------------:|------------------------------------------------------|
-| NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN | 110166 | 0.21723087716682948 | No Hit                                               |
-| GATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCG | 57880  | 0.1141307043045594  | Illumina Single End PCR Primer 1 (100% over 50bp)   |
-# Trimming will be conducted on the adapter sequences. 
-
-####################################### QUALITY ######################################  
-############################## Sample SRR34737771 (single) ###########################  
-######################################################################################
-# No trimming needed. 
-
-####################################### QUALITY ######################################  
-############################## Sample SRR5169068 (paired) ###########################  
-######################################################################################
-
-
 ```
+# Visualizing Microbiome - Quality Control Report
+
+This section documents the initial quality assessment of the metagenomic samples using **FastQC**.
+---
+# 🧬 Visualizing Microbiome - Quality Control Report
+
+This project analyzes metagenomic data from mining environments in the UK, Slovakia, and Germany. This report documents the initial quality assessment using **FastQC**.
+
+---
+
+## Quality Control Summary
+
+### 🇬🇧 Sample SRR30914511 (United Kingdom)
+**Type:** Paired-end | **Status:** Action Required (Trimming)
+Overall high base-call accuracy, but technical artifacts were identified in the reverse strand and adapter contamination in the forward strand.
+
+| Metric | Value |
+| :--- | :--- |
+| **Total Sequences** | 50,713,785 |
+| **Sequence Length** | 251 bp |
+| **GC Content** | 51% |
+
+#### Overrepresented Sequences
+| Strand | Sequence | Count | % | Possible Source |
+| :--- | :--- | :--- | :--- | :--- |
+| **Forward** | `GATCGGAAGAGCACACGTCTGAACTCC...` | 55,865 | 0.11% | TruSeq Adapter, Index 12 |
+| **Reverse** | `NNNNNNNNNNNNNNNNNNNNNNNNNN...` | 110,166 | 0.22% | Poly-N (No Hit) |
+| **Reverse** | `GATCGGAAGAGCGTCGTGTAGGGAAAG...` | 57,880 | 0.11% | Illumina PCR Primer 1 |
+
+> **Decision:** Trimming conducted using `fastp` to remove adapters and filter out Poly-N/low-quality segments before MetaPhlAn analysis.
+
+---
+
+### 🇸🇰 Sample SRR34737771 (Slovakia)
+**Type:** Single-end | **Status:** Passed
+
+Excellent quality data. No adapters detected and zero sequences flagged as poor quality.
+
+| Metric | Value |
+| :--- | :--- |
+| **Total Sequences** | 17,628,455 |
+| **Sequence Length** | 150 bp |
+| **GC Content** | 54% |
+
+> **Decision:** No trimming required. Proceeding directly to taxonomic profiling with raw data.
+
+---
+
+### 🇩🇪 Sample SRR5169068 (Germany)
+**Type:** Paired-end | **Status:** Passed / Minor Cleaning
+
+This is the largest dataset in the project. The sequences are shorter (51 bp) but show high consistency.
+
+| Metric | Value |
+| :--- | :--- |
+| **Total Sequences** | 146,909,573 |
+| **Sequence Length** | 51 bp |
+| **GC Content** | 44% |
+
+> **Decision:** Quality is high, but a light cleaning pass is performed to ensure consistency with the other paired-end samples in the pipeline.
+
+---
 
 ### 7 Krona Visualization  
 **Date:** 2026-03-10  
