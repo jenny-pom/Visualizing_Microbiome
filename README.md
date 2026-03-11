@@ -216,43 +216,33 @@ mkdir -p data/raw_fastq_data/quality_control
 fastqc ../*.fastq.gz -o .  
 
 ```
-# Visualizing Microbiome - Quality Control Report
+### Quality Control Summary  
+This section documents the initial quality assessment of the metagenomic samples using **FastQC**.  
+#### Sample SRR30914511 (United Kingdom)  
+**Type:** Paired-end | **Status:** Action Required (Trimming)  
+Overall high base-call accuracy, but technical artifacts were identified in the reverse strand and adapter contamination in the forward strand.    
+ 
+| Metric | Value |  
+| :--- | :--- |  
+| **Total Sequences** | 50,713,785 |  
+| **Sequence Length** | 251 bp |  
+| **GC Content** | 51% |  
 
-This section documents the initial quality assessment of the metagenomic samples using **FastQC**.
----
-# 🧬 Visualizing Microbiome - Quality Control Report
+#### Overrepresented Sequences  
+| Strand | Sequence | Count | % | Possible Source |  
+| :--- | :--- | :--- | :--- | :--- |  
+| **Forward** | `GATCGGAAGAGCACACGTCTGAACTCC...` | 55,865 | 0.11% | TruSeq Adapter, Index 12 |  
+| **Reverse** | `NNNNNNNNNNNNNNNNNNNNNNNNNN...` | 110,166 | 0.22% | Poly-N (No Hit) |  
+| **Reverse** | `GATCGGAAGAGCGTCGTGTAGGGAAAG...` | 57,880 | 0.11% | Illumina PCR Primer 1 |  
 
-This project analyzes metagenomic data from mining environments in the UK, Slovakia, and Germany. This report documents the initial quality assessment using **FastQC**.
-
----
-
-## Quality Control Summary
-
-### 🇬🇧 Sample SRR30914511 (United Kingdom)
-**Type:** Paired-end | **Status:** Action Required (Trimming)
-Overall high base-call accuracy, but technical artifacts were identified in the reverse strand and adapter contamination in the forward strand.
-
-| Metric | Value |
-| :--- | :--- |
-| **Total Sequences** | 50,713,785 |
-| **Sequence Length** | 251 bp |
-| **GC Content** | 51% |
-
-#### Overrepresented Sequences
-| Strand | Sequence | Count | % | Possible Source |
-| :--- | :--- | :--- | :--- | :--- |
-| **Forward** | `GATCGGAAGAGCACACGTCTGAACTCC...` | 55,865 | 0.11% | TruSeq Adapter, Index 12 |
-| **Reverse** | `NNNNNNNNNNNNNNNNNNNNNNNNNN...` | 110,166 | 0.22% | Poly-N (No Hit) |
-| **Reverse** | `GATCGGAAGAGCGTCGTGTAGGGAAAG...` | 57,880 | 0.11% | Illumina PCR Primer 1 |
-
-> **Decision:** Trimming conducted using `fastp` to remove adapters and filter out Poly-N/low-quality segments before MetaPhlAn analysis.
+> **Decision:** Trimming conducted using `fastp` to remove adapters and filter out Poly-N/low-quality segments before MetaPhlAn analysis.  
 
 ---
 
-### 🇸🇰 Sample SRR34737771 (Slovakia)
-**Type:** Single-end | **Status:** Passed
+#### Sample SRR34737771 (Slovakia)  
+**Type:** Single-end | **Status:** Passed  
 
-Excellent quality data. No adapters detected and zero sequences flagged as poor quality.
+Excellent quality data. No adapters detected and zero sequences flagged as poor quality.  
 
 | Metric | Value |
 | :--- | :--- |
@@ -260,22 +250,22 @@ Excellent quality data. No adapters detected and zero sequences flagged as poor 
 | **Sequence Length** | 150 bp |
 | **GC Content** | 54% |
 
-> **Decision:** No trimming required. Proceeding directly to taxonomic profiling with raw data.
+> **Decision:** No trimming required. Proceeding directly to taxonomic profiling with raw data.  
 
 ---
+  
+#### Sample SRR5169068 (Germany)  
+**Type:** Paired-end | **Status:** Passed / Minor Cleaning  
 
-### 🇩🇪 Sample SRR5169068 (Germany)
-**Type:** Paired-end | **Status:** Passed / Minor Cleaning
+This is the largest dataset in the project. The sequences are shorter (51 bp) but show high consistency.  
 
-This is the largest dataset in the project. The sequences are shorter (51 bp) but show high consistency.
+| Metric | Value |  
+| :--- | :--- |  
+| **Total Sequences** | 146,909,573 |  
+| **Sequence Length** | 51 bp |  
+| **GC Content** | 44% |  
 
-| Metric | Value |
-| :--- | :--- |
-| **Total Sequences** | 146,909,573 |
-| **Sequence Length** | 51 bp |
-| **GC Content** | 44% |
-
-> **Decision:** Quality is high, but a light cleaning pass is performed to ensure consistency with the other paired-end samples in the pipeline.
+> **Decision:** Quality is high, but a light cleaning pass is performed to ensure consistency with the other paired-end samples in the pipeline.  
 
 ---
 
