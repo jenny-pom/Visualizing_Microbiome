@@ -1,5 +1,6 @@
 data/
 results/logs/
+results/taxonomy/
 *.html
 *.log
 .DS_Store

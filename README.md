@@ -226,6 +226,7 @@ fastqc ../*.fastq.gz -o .
 ```
 #### Quality Control Summary  
 This section documents the initial quality assessment of the metagenomic samples using **FastQC**.  
+
 #### Sample SRR30914511 (United Kingdom)  
 **Type:** Paired-end | **Status:** Action Required (Trimming)  
 Overall high base-call accuracy, but technical artifacts were identified in the reverse strand and adapter contamination in the forward strand.    
@@ -356,15 +357,27 @@ ps -u inf-22-2025 | grep -E "metaphlan|bowtie2"
 # After creating the 3 *_profile.txt files we run this to unify them to one single table.   
 merge_metaphlan_tables.py results/taxonomy/*_profile.txt > results/taxonomy/merged_abundance_table.txt
 
+
 # In order to create the Kronan Map the file format has to be corrected
 grep -E "s__|clade_name" results/taxonomy/merged_abundance_table.txt | cut -f1,3- | sed 's/clade_name/Sample/' | sed 's/s__//g' > results/taxonomy/merged_abundance_table_krona.txt
 
+# Remove headers and UNCLASSIFIED, use awk to move column 2 to the start, followed by taxonomy.
+grep -vE "clade_name|UNCLASSIFIED" results/taxonomy/merged_abundance_table.txt | awk -F'\t' '{print $2 "\t" $1}' | sed 's/|/\t/g' > results/taxonomy/krona_slovakia.txt
+
+# Repeat 
+grep -vE "clade_name|UNCLASSIFIED" results/taxonomy/merged_abundance_table.txt | awk -F'\t' '{print $3 "\t" $1}' | sed 's/|/\t/g' > results/taxonomy/krona_germany.txt
+
+# Repeat 
+grep -vE "clade_name|UNCLASSIFIED" results/taxonomy/merged_abundance_table.txt | awk -F'\t' '{print $4 "\t" $1}' | sed 's/|/\t/g' > results/taxonomy/krona_uk.txt
+
+# Create one Krona plot for each sample
+ktImportText \
+  results/taxonomy/krona_slovakia.txt,Slovakia \
+  results/taxonomy/krona_germany.txt,Germany \
+  results/taxonomy/krona_uk.txt,UK \
+  -o results/taxonomy/krona_plots.html
 
 ```
-
-
-## Project structure  
-
 ## References  
 TODO!!! Add more before hand-in  
 https://doi.org/10.1038/s41587-023-01688-w  
