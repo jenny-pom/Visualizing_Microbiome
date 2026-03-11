@@ -165,6 +165,8 @@ streamlit run scripts/my_bioinfo_app.py
 ---
 
 ### 6. Sample Selection, FASTq quality control and trimming   
+**Date:** 2026-03-10  
+**Command run:**  
 There where no WGS samples from Sweden so instead samples from 3 different countries in Europe were selceted:  
 1. **SRR5169068**   
 Country - Germany: Drei Kronen und Ehrt (Harz Mountains)  
@@ -266,7 +268,7 @@ This is the largest dataset in the project. The sequences are shorter (51 bp) bu
 | **Sequence Length** | 51 bp |  
 | **GC Content** | 44% |  
 
-> **Decision:** Quality is high, but a light cleaning pass could be performed to ensure consistency with the other paired-end samples in the pipeline. However, due to time constraints, this step will not be performed.
+> **Decision:** Quality is high, but a light cleaning pass could be performed to ensure consistency with the other paired-end samples in the pipeline. However, due to time constraints and the fact that the reads are ONLY 50 bp, this step will not be performed.
 
 ```bash
 # Perform trimming of SRR30914511 using fastp
@@ -308,7 +310,7 @@ fastp -i data/raw_fastq_data/SRR30914511_1.fastq.gz \
 ---
 
 ### 7 MetaPhlAn Taxonomic Analysis  
-**Date:** 2026-03-10  
+**Date:** 2026-03-11
 **Command run:**  
 ```bash  
 ###### Start Taxonomic Analysis #######  
@@ -319,36 +321,46 @@ conda activate metaphlan_env # Eller vad din miljö heter
 mkdir -p results/profiling
 
 # Sample from England
-metaphlan data/trimmed_data_SRR30914511/SRR30914511_1_trimmed.fastq.gz,data/trimmed_data_SRR30914511/SRR30914511_2_trimmed.fastq.gz \
-          --input_type fastq \
-          --add_viruses \
-          --bowtie2out results/profiling/SRR30914511.bowtie2.bz2 \
-          --nproc 8 \
-          -o results/profiling/SRR30914511_profile.txt
-
+nohup metaphlan data/trimmed_data_SRR30914511/SRR30914511_1_trimmed.fastq.gz,data/trimmed_data_SRR30914511/SRR30914511_2_trimmed.fastq.gz \
+  --input_type fastq \
+  --db_dir /home/inf-22-2025/miniconda3/envs/microbiome_env/lib/python3.10/site-packages/metaphlan/metaphlan_databases/ \
+  -x mpa_vJan25_CHOCOPhlAnSGB_202503 \
+  --mapout results/taxonomy/SRR30914511.bowtie2.bz2 \
+  --nproc 8 \
+  -o results/taxonomy/SRR30914511_profile.txt > results/logs/metaphlan_UK.log 2>&1 &
 
 # Slovakia
-metaphlan data/raw_fastq_data/SRR34737771.fastq.gz \
-          --input_type fastq \
-          --add_viruses \
-          --bowtie2out results/profiling/SRR34737771.bowtie2.bz2 \
-          --nproc 8 \
-          -o results/profiling/SRR34737771_profile.txt
-
+nohup metaphlan data/raw_fastq_data/SRR34737771.fastq.gz \
+  --input_type fastq \
+  --db_dir /home/inf-22-2025/miniconda3/envs/microbiome_env/lib/python3.10/site-packages/metaphlan/metaphlan_databases/ \
+  -x mpa_vJan25_CHOCOPhlAnSGB_202503 \
+  --nproc 8 \
+  -o results/taxonomy/SRR34737771_profile.txt > results/logs/metaphlan_Slovakia.log 2>&1 &
 
 # Germany
-metaphlan data/raw_fastq_data/SRR5169068_1.fastq.gz,data/raw_fastq_data/SRR5169068_2.fastq.gz \
-          --input_type fastq \
-          --add_viruses \
-          --bowtie2out results/profiling/SRR5169068.bowtie2.bz2 \
-          --nproc 8 \
-          -o results/profiling/SRR5169068_profile.txt
+nohup metaphlan --input_type fastq \
+--db_dir /home/inf-22-2025/miniconda3/envs/microbiome_env/lib/python3.10/site-packages/metaphlan/metaphlan_databases/ \
+-x mpa_vJan25_CHOCOPhlAnSGB_202503 \
+--nproc 8 \
+-o results/taxonomy/SRR5169068_profile.txt data/raw_fastq_data/SRR5169068_1.fastq.gz,data/raw_fastq_data/SRR5169068_2.fastq.gz > results/logs/metaphlan_Germany.log 2>&1 &
 
+# Check that they are running: 
+ps -u inf-22-2025 | grep -E "metaphlan|bowtie2"
 ```
 ---
 
-### 8. Integration with Interactive Map  
+### 8. Integration with Interactive Kronan Map  
+**Date:** 2026-03-11  
+**Command run:**  
+```bash
+# After creating the 3 *_profile.txt files we run this to unify them to one single table.   
+merge_metaphlan_tables.py results/taxonomy/*_profile.txt > results/taxonomy/merged_abundance_table.txt
 
+# In order to create the Kronan Map the file format has to be corrected
+grep -E "s__|clade_name" results/taxonomy/merged_abundance_table.txt | cut -f1,3- | sed 's/clade_name/Sample/' | sed 's/s__//g' > results/taxonomy/merged_abundance_table_krona.txt
+
+
+```
 
 
 ## Project structure  

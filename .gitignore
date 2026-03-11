@@ -6,3 +6,4 @@ results/logs/
 *fastq.gz
 *fastq.zip
 *.out
+.txt
