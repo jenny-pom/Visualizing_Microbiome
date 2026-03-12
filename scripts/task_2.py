@@ -2,19 +2,24 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# 1. Upload data
-file_path = "data/shotgun_data/mine_shotgun_only.tsv"
-df = pd.read_csv(file_path, sep='\t')
+####################################################################  Description  ######################################################################################
+# This script is used for the second task where we are asked to show the distribution of 16S vs Shotgun sequencing samples across different countries. 
+# It reads the metadata, processes it to extract relevant information, and creates a bar plot that is saved as both PNG and PDF for use in the app and for presentations.
+#########################################################################################################################################################################
 
-# 2. Clean the data: Keep only the country (the text before the colon)
+# Read the data
+file_path = "data/shotgun_data/mine_shotgun_only.tsv"
+df = pd.read_csv(file_path, sep='\t') # Load the TSV file into a DataFrame
+
+# Keep only the country name (remove any additional info after ':')
 df['clean_country'] = df['country'].str.split(':').str[0]
 
-# 3. Count samples per country and sort (from most to least)
+# Count the number of samples per country
 country_counts = df['clean_country'].value_counts()
 
-# 4. Create the plot
+# Create the bar plot
 plt.figure(figsize=(12, 7))
-# Use color palette ('mako' or 'viridis')
+# Use color palette that match the overall theme of the app
 sns.barplot(x=country_counts.index, y=country_counts.values, palette='viridis')
 
 # Add titles and labels
@@ -32,9 +37,6 @@ for i, count in enumerate(country_counts.values):
 # Change the style for better aesthetics
 plt.tight_layout()
 
-# 5. Save the plot
-# We save both as PNG (for PowerPoint/Word) and PDF (for best quality)
+# Save both as PNG (for PowerPoint/Word) and PDF (for best quality)
 plt.savefig("results/vis/task2_country_distribution.png", dpi=300)
 plt.savefig("results/vis/task2_country_distribution.pdf")
-
-print(f"Done! The plot for {len(country_counts)} countries has been saved in 'visualizations/'.")

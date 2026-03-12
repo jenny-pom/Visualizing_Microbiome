@@ -5,11 +5,11 @@
 
 # Define variables
 ID_FILES="$1" # Take the first argument given in the terminal
-OUTPUT_DIR="data/metadata" # Define the output directory for metadata files
+OUTPUT_DIR="data/metadata" #Define the output directory (hardcoded) for metadata files
 BASENAME=$(basename "$ID_FILES" .txt) # Get the base name of the input file without extension
 FINAL_TSV="$OUTPUT_DIR/${BASENAME}_metadata.tsv" # Define the output TSV file name based on the input file name
 
-mkdir -p "$OUTPUT_DIR" # Create the output directory if it doesn't exist
+mkdir -p "$OUTPUT_DIR" # Create the output directory if it doesn't exist!
 
 echo "start metadata retrieval for: $ID_FILES"
 

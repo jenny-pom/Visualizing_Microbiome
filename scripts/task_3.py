@@ -2,11 +2,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# 1. Read the data
+####################################################################  Description  #########################################################################################################################
+# This script is used for the third task where it creates a bar plot comparing the distribution of 16S rRNA amplicon sequencing samples and shotgun metagenome sequencing samples across different countries.
+############################################################################################################################################################################################################
+
+# Read the data
 file_path = "data/metadata/all_metadata.tsv"
 df = pd.read_csv(file_path, sep='\t')
 
-# 2. Clean the country names by taking only the part before the colon
+# Clean the country names by taking only the part before the colon
 df['clean_country'] = df['country'].str.split(':').str[0]
 
 # Filter so that we only have Amplicon och Shotgun (WGS)
@@ -14,7 +18,7 @@ strategy_map = {'WGS': 'Shotgun Metagenome', 'AMPLICON': '16S rRNA Amplicon'}
 df_plot = df[df['library_strategy'].isin(['WGS', 'AMPLICON'])].copy()
 df_plot['Sequencing Type'] = df_plot['library_strategy'].map(strategy_map)
 
-# 3. Creat the plot
+# Creat the plot
 plt.figure(figsize=(14, 8))
 
 # We want to order the countries by the total number of samples (both 16S and Shotgun combined)
@@ -33,7 +37,6 @@ plt.grid(axis='y', linestyle='--', alpha=0.3)
 
 plt.tight_layout()
 
-# 4. Save the plot
+# Save both as PNG (for PowerPoint/Word) and PDF (for best quality)
 plt.savefig("results/vis/task3_sequencing_comparison.png", dpi=300)
 plt.savefig("results/vis/task3_country_distribution.pdf", dpi=300)
-print("Task 3 plot saved to results/vis/task3_sequencing_comparison.png")
