@@ -1,5 +1,6 @@
 data/
 results/logs/
+results/profiles_ALL_WGS/
 results/taxonomy/
 *.html
 *.log
@@ -8,3 +9,4 @@ results/taxonomy/
 *fastq.zip
 *.out
 .txt
+fifo_map.mapout.txt

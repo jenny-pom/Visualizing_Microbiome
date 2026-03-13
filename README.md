@@ -1,5 +1,7 @@
 # Visualising the Mine Microbiome  
-Exploring the publicly available  mine mic## References  
+Exploring the publicly available  mine microbiome
+
+## References  
 OBS!! Add more before hand-in  
 https://doi.org/10.1038/s41587-023-01688-wrobiome dataset to alayse geographical disrtibution and microbial composition using metagenomic and shotgun sequenced data.  
 **Author:** Jenny Laberg Nilsson   
@@ -370,12 +372,62 @@ grep -vE "clade_name|UNCLASSIFIED" results/taxonomy/merged_abundance_table.txt |
 # Repeat 
 grep -vE "clade_name|UNCLASSIFIED" results/taxonomy/merged_abundance_table.txt | awk -F'\t' '{print $4 "\t" $1}' | sed 's/|/\t/g' > results/taxonomy/krona_uk.txt
 
-# Create one Krona plot for each sample
+# Create one Krona plot for each sample together
 ktImportText \
   results/taxonomy/krona_slovakia.txt,Slovakia \
   results/taxonomy/krona_germany.txt,Germany \
   results/taxonomy/krona_uk.txt,UK \
   -o results/taxonomy/krona_plots.html
+
+# In hindsight, I also decided to run Krona for each of the three samples separately so that I could try to integrate them with my interactive sample map.
+ktImportText krona_slovakia.txt -o krona_slovakia.html
+
+ktImportText krona_germany.txt -o krona_germany.html
+
+ktImportText krona_uk.txt -o krona_uk.html
+```
+
+### 8. Expanding the Interactive Kronan Map  
+**Date:** 2026-03-12  
+**Command run:**  
+```bash
+# Downloading all fastq files from my mine_shotgun_only.tsv, I used the metadata 95 column that has a fastq_ftp link
+awk -F'\t' 'NR>1 {print $95}' shotgun_data/mine_shotgun_only.tsv | tr ';' '\n' > all_sho
+tgun_fastq_ftp/ftp_list.txt
+
+# Now I will download everything (2 files at a time), this will take A VERY LONG TIME
+nohup xargs -n 1 -P 2 wget -q -P data/raw_fastq_data_ALL_WGS/ < data/all_shotgun_fastq_ftp/ft
+p_list.txt > download_progress.log 2>&1 &
+
+# Space ran out and I decided to remove any files that had not downloaded proberly due to space limitation
+find data/raw_fastq_data_ALL_WGS/ -name "*.fastq.gz" -size -1M -delete
+
+# I ended up with a total of 29 finsihed fastq files and I will be running KRONA plots on these ones. 
+mkdir -p results/profiles_ALL_WGS/
+
+# I will not do ANY quality control on following samples because of time restriction
+# Run metaphlan on all fastqc over nigth
+nohup bash -c 'for f in data/raw_fastq_data_ALL_WGS/*.fastq.gz; do
+    sample_id=$(basename "$f" .fastq.gz)
+    echo "Starting analysis for: $sample_id"
+
+    metaphlan "$f" \
+      --input_type fastq \
+      --db_dir /home/inf-22-2025/miniconda3/envs/microbiome_env/lib/python3.10/site-packages/metaphlan/metaphlan_databases/ \
+      -x mpa_vJan25_CHOCOPhlAnSGB_202503 \
+      --nproc 4 \
+      --read_min_len 30 \ # Essential since I didn't do any QC
+      -o "results/profiles_ALL_WGS/${sample_id}_profile.txt"
+
+    echo "Finished $sample_id"
+done' > metaphlan_overnight.log 2>&1 &
+
+# In the meantime I trid to integrate the 3 samples from Germany, Slovakia and UK to the interactive sample map. I did this by modifying the task_4.py script.
+
+
+
+# Add all the kronan plots to the folium world map ()
+
 
 ```
 ## References  

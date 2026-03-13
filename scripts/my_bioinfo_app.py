@@ -1,10 +1,11 @@
 import streamlit as st
-import pandas as pd
 import streamlit.components.v1 as components
+import pandas as pd
+import os
 # -------------------------------------------------------------------------
 ########################## Description ####################################
 # This script was built for making a interactive streamlit app where all...
-# the graphs created during the project is showed. 
+# the data visualization created during the project is showed. 
 ###########################################################################
 
 st.set_page_config(layout="wide") # Some visual adjustments for better display
@@ -15,13 +16,27 @@ st.markdown("This tool visualizes Shotgun metadata and taxonomic profiles from g
 # --- Create Tabs ---
 tab_map, tab_krona, tab_stats = st.tabs(["Interactive Map", "Taxonomic Profile (Krona)", "Statistics"])
 
-with tab_map: # First tab for the interactive map
-    st.header("Interactive Sample Map") # Header for the map section
-    st.markdown("This map visualizes the geographical origins of the metagenomic samples, including both shotgun (blue) and 16S (green) datasets, highlighting the diverse range of mine environments analyzed.")
-    with open("results/vis/interactive_map.html", 'r', encoding='utf-8') as f:
-        map_html = f.read() # Read the pre-generated interactive map HTML file
-        components.html(map_html, height=600) # Embed the map into the Streamlit app with specified height
+# ----- Interactive Map Tab -----
+with tab_map: 
+    st.header("Interactive Sample Map") 
+    st.markdown("""
+    **Geographical Distribution of Mine Microbiomes**
+    * **Blue Dots**: Shotgun Metagenomic samples.
+    * **Green Dots**: 16S rRNA Amplicon samples.
+    * **Orange Dots**: Click to explore the microbial composition!
+    """)
 
+    map_path = "results/vis/interactive_map.html"
+    
+if os.path.exists(map_path):
+    with open(map_path, 'r', encoding='utf-8') as f:
+        html_data = f.read()
+    
+    components.html(html_data, height=700, scrolling=True)
+else:
+    st.error("Map file not found! Please run task_4.py first.")
+
+# ----- Krona Taxonomy Visualization Tab ---
 with tab_krona: # Second tab for the Krona taxonomy visualization
     st.header("Krona Taxonomy Visualization of 3 European Samples") # Header for the Krona section
     st.markdown("""
@@ -54,6 +69,7 @@ During the bioinformatic pipeline, the sample from **Germany (SRR5169068)** init
 Analysis revealed that the sequencing reads in this specific dataset were shorter than the default threshold. To include this sample in the comparative study, the parameter `--read_min_len 30` was applied. This adjustment ensured that shorter, high-quality reads were not discarded, allowing for a successful taxonomic reconstruction without compromising the integrity of the relative abundance calculations.
 """)
 
+# ----- Dataset Statistics Tab -----
 with tab_stats:
     st.header("Dataset Statistics") # Header for the statistics section
     st.markdown("Overview of sample distribution by country and a comparison of sequencing strategies (16S vs. Shotgun).")
