@@ -1,7 +1,20 @@
-data/
+data/all_shotgun_fastq_ftp
+data/sample_IDs
+data/selected_samples_WGS
+data/shotgun_data
+data/metadata/NCBI.mine.drainage.metagenome.sampleID_metadata.tsv
+data/metadata/NCBI.mine.metagenome.sampleID_metadata.tsv
+data/trimmed_data_SRR30914511
 results/logs/
 results/profiles_ALL_WGS/
-results/taxonomy/
+
+# Ignore the entire taxonomy folder
+results/taxonomy/*
+# But DO NOT ignore these specific files (the '!' means 'not')
+!results/taxonomy/krona_html/SRR30914511.html
+!results/taxonomy/krona_html/SRR34737771.html
+!results/taxonomy/krona_html/SRR5169068.html
+
 *.html
 *.log
 .DS_Store
