@@ -1,30 +1,23 @@
 # Visualising the Mine Microbiome  
-Exploring the publicly available  mine microbiome
-
-## References  
-OBS!! Add more before hand-in  
-https://doi.org/10.1038/s41587-023-01688-wrobiome dataset to alayse geographical disrtibution and microbial composition using metagenomic and shotgun sequenced data.  
 **Author:** Jenny Laberg Nilsson   
 
 ## Project Overview  
-This project analyses publicly available skin microbiome datasets from NCBI. The workflow extracts metadata, visualizes geographical sample distribution, and performs microbial profiling on selected Swedish samples.  
-The Workflow:  
-1.  
-2.  
-3.  
-4.  
-...  
+This project analyses publicly available mine microbiome datasets from ENA (European Nuclear Archive). The workflow consist of following steps:
+1. Extraction of sample metadata and raw FASTQ sequencing data.
+2. Quality control
+3. Implementation of MetaPhlAn 4 to perform high-resolution taxonomic analysis using clade-specific marker genes.
+4. Generating interactive Krona plots to visualize the microbial diversity of each site.
+5. Developing an interactive HTML dashboard to map the geographical distribution of samples alongside their corresponding taxonomic profiles.
 
 ## Data Sources  
-Public datasets from NCBI  
+Public datasets from ENA (European Nuclear Archive)
+```bash
 curl "https://www.ebi.ac.uk/ena/portal/api/search?result=read_run&query=sample_accession=SAMPLE_ID&fields=all&format=tsv"  
-
-Example of sample accession: SAMEA121737266  
+```
 
 ## Requirements & Envirolment  
-This project uses a Conda environment to manage dependencies. Ensure you have Conda installed.  
-Activate the environment used for the analysis:  
-################ TODO!!!!! Update this or change it if necessary before hand in #####################  
+This project uses two Conda environments to manage dependencies. Ensure you have Conda installed.  
+Activate the environments used for the analysis (see folder env):
 ```bash  
 # Create the environment from scratch  
 conda create -n microbiome_env python=3.10 -c bioconda -c conda-forge  
@@ -38,20 +31,15 @@ conda install -c bioconda xmlstarlet metaphlan kraken2 krona -y
 # Install data processing and plotting libraries  
 conda install -c conda-forge pandas matplotlib leaflet -y  
 
-# TODO: Update this before hand in!!!!!!!!!!!!   
 # Export environment to a file for reproducibility   
 conda env export > env/environment.yml  
 ```
-######## TODO!! Update this before hand-in  
-Tool	Purpose  
-Kraken2	Taxonomic classification  
-MetaPhlAn Metagenomic micriobial profiling   
-Krona Interactive taxonomy visualisation  
-Python/R Data processing and visualisation  
-
-Example installation:  
-ADD
-
+**List of essential software:**  
+Note: All software was installed using conda  
+**Kraken2**	- Taxonomic classification  
+**MetaPhlAn** - Metagenomic micriobial profiling   
+**Krona** - Interactive taxonomy visualisation  
+**Python/R** - Data processing and visualisation  
 
 ## Project Workflow & Log  
 
@@ -60,7 +48,7 @@ Set up directory, initiate github and connect to github. Also retrieve the data 
 **Date:** 2026-03-09  
 **Command run:**  
 ```bash  
-#### Set-up of project directory and connect to github ####  
+#### Set-up of project directory and connect to github  
 mkdir Visualizing_Microbiome  
 mkdir scripts data results results/vis results/logs metadata  
 touch REAME.md .gitignore  
@@ -71,7 +59,7 @@ git add .
 git commit -m  
 git push  
 
-#### Generate script and collect metadata for mine microbiome samples ####  
+# Generate script and collect metadata for mine microbiome samples  
 # non drainage metadata  
 bash scripts/get_metadata.sh data/sample_IDs/NCBI.mine.metagenome.sampleID.txt  
 # drainage metadata  
@@ -93,13 +81,13 @@ head -n 1 data/metadata/NCBI.mine.drainage.metagenome.sampleID_full_metadata.tsv
 # Second add the data from the drainage  
 tail -n +2 data/metadata/NCBI.mine.drainage.metagenome.sampleID_full_metadata.tsv >> data/metadata/all_metadata.tsv  
 
-# Lastly, add the data from the general mine metagonome  
+# Lastly, add the data from the general mine metagenome  
 tail -n +2 data/metadata/NCBI.mine.metagenome.sampleID_full_metadata.tsv >> data/metadata/all_metadata.tsv  
 ```
 ---
 
 ### 2. Data filtering  
-Start filtering the data, this project will only work with WGS (shotgun) data.  
+Start filtering the data, this project will only focus on WGS (shotgun) data.  
 **Date:** 2026-03-09  
 **Command run:**  
 ```bash  
@@ -110,7 +98,7 @@ python scripts/remove_amplicon.py
 ---
 
 ### 3. TASK 2 - Geographical Distrbution Visualization  
-Make a script that visualise the number of samples over geographical distrubution.  
+Make a script that visualise the number of samples over geographical distribution.  
 **Date:** 2026-03-10  
 **Command run:**  
 ```bash  
@@ -178,7 +166,7 @@ Library strategy - WGS
 Library layout - PAIRED  
 
 2. **SRR30914511**  
-Country - United Kingdom: London  
+Country - United Kingdom: London (Actually I don't think this is the rigth location but there is no other information)  
 Read count - 50713785  
 Description - Illumina HiSeq 2500 sequencing: DNA of metagenome: acid mine drainage  
 Library strategy - WGS  
@@ -191,13 +179,14 @@ Description - DNBSEQ-T7 sequencing: DNA-Seq of metagenome: mine water
 Library strategy - WGS  
 Library layout - SINGLE  
 
-**Bioinformatic Pipeline**
-1.  **QC:** FastQC v0.11.9
-2.  **Processing:** `fastp` for adapter removal and quality filtering
+**Bioinformatic Pipeline**  
+**QC:** FastQC v0.11.9  
+**Processing:** `fastp` for adapter removal and quality  filtering  
+
 **Date:** 2026-03-10  
 **Command run:**  
 ```bash  
-# After selecting samples, I ran this to same the metadata in an index text file  
+# After selecting samples, I ran this to save the metadata in an index text file  
 paste <(head -n 1 data/metadata/all_metadata.tsv | tr '\t' '\n') <(grep "SRR5169068" data/me  
 tadata/all_metadata.tsv | tr '\t' '\n') | cat -n > data/selected_samples_WGS/SRR5169068_index.txt  
 
@@ -223,10 +212,11 @@ nohup curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR347/071/SRR34737771/SRR34737
 
 # Make a directory for quality control  
 mkdir -p data/raw_fastq_data/quality_control  
+
 # Do fastqc on the raw fastq files before continuing with making Krona plots  
 fastqc ../*.fastq.gz -o .  
 ```
-#### Quality Control Summary  
+## Quality Control Summary  
 This section documents the initial quality assessment of the metagenomic samples using **FastQC**.  
 
 #### Sample SRR30914511 (United Kingdom)  
@@ -281,7 +271,7 @@ mkdir -p data/trimmed_data_SRR30914511
 conda create -n qc_env -c bioconda fastp -y
 conda activate qc_env
 fastp --version
-# fastp 0.23.4
+fastp 0.23.4
 
 # Start filtering  
 fastp -i data/raw_fastq_data/SRR30914511_1.fastq.gz \
@@ -294,14 +284,13 @@ fastp -i data/raw_fastq_data/SRR30914511_1.fastq.gz \
       --html results/qc/fastp_SRR30914511.html \ # Will generate report
       --json results/qc/fastp_SRR30914511.json
 ```
-#### Trimming Results (fastp)  
+## Trimming Results (fastp)  
 | Metric | Before Trimming | After Trimming |  
 | :--- | :--- | :--- |  
 | **Total Reads** | 101,427,570 | 100,658,838 (99.2%) |  
 | **Total Bases** | 25.46 Gb | 24.91 Gb |  
 | **Q30 Bases (%)** | 91.46% (avg) | 92.00% (avg) |  
-| **Adapter Trimmed Reads** | - | 11,718,317 (11.5%) |  
-| **Duplication Rate** | - | 15.84% |  
+
 
 **Filtering Details:**  
 * **Low quality:** 590,396 reads removed.  
@@ -313,7 +302,7 @@ fastp -i data/raw_fastq_data/SRR30914511_1.fastq.gz \
 ---
 
 ### 7 MetaPhlAn Taxonomic Analysis  
-**Date:** 2026-03-11
+**Date:** 2026-03-11  
 **Command run:**  
 ```bash  
 ###### Start Taxonomic Analysis #######  
@@ -356,7 +345,7 @@ ps -u inf-22-2025 | grep -E "metaphlan|bowtie2"
 **Date:** 2026-03-11  
 **Command run:**  
 ```bash
-# After creating the 3 *_profile.txt files we run this to unify them to one single table.   
+# After creating the 3 *_profile.txt files we run this to unify them to one single table. 
 merge_metaphlan_tables.py results/taxonomy/*_profile.txt > results/taxonomy/merged_abundance_table.txt
 
 
@@ -387,7 +376,8 @@ ktImportText krona_germany.txt -o krona_germany.html
 ktImportText krona_uk.txt -o krona_uk.html
 ```
 
-### 8. Expanding the Interactive Kronan Map  
+### 8. Expanding the Interactive Kronan Map 
+This step was not necessary but something I tired after getting feedback from Eran.    
 **Date:** 2026-03-12  
 **Command run:**  
 ```bash
@@ -395,16 +385,17 @@ ktImportText krona_uk.txt -o krona_uk.html
 awk -F'\t' 'NR>1 {print $95}' shotgun_data/mine_shotgun_only.tsv | tr ';' '\n' > all_sho
 tgun_fastq_ftp/ftp_list.txt
 
-# Now I will download everything (2 files at a time), this will take A VERY LONG TIME
+# Now I will download everything (2 files at a time), this will take A VERY LONG TIME. Big mistake: This was not so smart since I ran out of RAM on the server.
 nohup xargs -n 1 -P 2 wget -q -P data/raw_fastq_data_ALL_WGS/ < data/all_shotgun_fastq_ftp/ft
 p_list.txt > download_progress.log 2>&1 &
 
 # Space ran out and I decided to remove any files that had not downloaded proberly due to space limitation
 find data/raw_fastq_data_ALL_WGS/ -name "*.fastq.gz" -size -1M -delete
 
-# I ended up with a total of 29 finsihed fastq files and I will be running KRONA plots on these ones. 
-mkdir -p results/profiles_ALL_WGS/
-
+g thorugh the folder: krona_html, which takes each one by one
+bash scripts/generate_krona.sh 
+```
+```bash
 # I will not do ANY quality control on following samples because of time restriction
 # Run metaphlan on all fastqc over nigth
 nohup bash -c 'for f in data/raw_fastq_data_ALL_WGS/*.fastq.gz; do
@@ -421,15 +412,23 @@ nohup bash -c 'for f in data/raw_fastq_data_ALL_WGS/*.fastq.gz; do
 
     echo "Finished $sample_id"
 done' > metaphlan_overnight.log 2>&1 &
-
+```
+```bash
 # In the meantime I trid to integrate the 3 samples from Germany, Slovakia and UK to the interactive sample map. I did this by modifying the task_4.py script.
 
+# I ended up with a total of 29 finsihed fastq files and I will be running KRONA plots on all of them.
 
+# Merge them using the merge_metaphlan script 
+merge_metaphlan_tables.py results/profiles_ALL_WGS/*_profile.txt > results/taxonomy/merged_abundance_table_2.txt
 
-# Add all the kronan plots to the folium world map ()
+# Clean the table (just like I did priviously)
+bash scripts/clean_merged_abundance_table.sh 
 
-
+# It turned out that the additional 8 samples I had made didn't have any coordinate specified! So they won't show up on the map. :(
 ```
 ## References  
-TODO!!! Add more before hand-in  
+
 https://doi.org/10.1038/s41587-023-01688-w  
+http://doi.org10.1038/s41598-017-03315-6  
+http://doi.org10.3389/fmicb.2025.1675058  
+https://doi.org/10.1111/1758-2229.70261  

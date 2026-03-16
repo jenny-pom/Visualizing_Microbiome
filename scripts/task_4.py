@@ -11,7 +11,7 @@ from branca.element import IFrame
 #########################################################################################################################################################################
 
 # Setup paths
-krona_folder = "results/taxonomy/krona_html"
+krona_folder = "results/taxonomy/krona_html/" # Path to the folder where your Krona HTML files are stored
 metadata_path = "data/metadata/all_metadata.tsv"
 
 # Read you data
