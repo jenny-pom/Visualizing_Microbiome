@@ -15,11 +15,24 @@ results/taxonomy/*
 !results/taxonomy/krona_html/SRR34737771.html
 !results/taxonomy/krona_html/SRR5169068.html
 
-*.html
-*.log
+# General ignores
 .DS_Store
 *fastq.gz
 *fastq.zip
 *.out
 .txt
 fifo_map.mapout.txt
+*.log
+
+# Ignore all HTML files by default
+*.html
+
+# --- THE EXCEPTIONS (Keep these at the very bottom) ---
+# Tell Git to look inside the results/taxonomy/krona_html folder
+!results/taxonomy/
+!results/taxonomy/krona_html/
+
+# Specifically allow these three files (the "!" overrides the *.html rule above)
+!results/taxonomy/krona_html/SRR30914511.html
+!results/taxonomy/krona_html/SRR34737771.html
+!results/taxonomy/krona_html/SRR5169068.html
