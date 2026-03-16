@@ -8,12 +8,6 @@ data/trimmed_data_SRR30914511
 results/logs/
 results/profiles_ALL_WGS/
 
-# Ignore the entire taxonomy folder
-results/taxonomy/*
-# But DO NOT ignore these specific files (the '!' means 'not')
-!results/taxonomy/krona_html/SRR30914511.html
-!results/taxonomy/krona_html/SRR34737771.html
-!results/taxonomy/krona_html/SRR5169068.html
 
 # General ignores
 .DS_Store
@@ -27,9 +21,11 @@ fifo_map.mapout.txt
 # Ignore all HTML files by default
 *.html
 
+!results/vis/
+!results/vis/interactive_map.html
+
 # --- THE EXCEPTIONS (Keep these at the very bottom) ---
 # Tell Git to look inside the results/taxonomy/krona_html folder
-!results/taxonomy/
 !results/taxonomy/krona_html/
 
 # Specifically allow these three files (the "!" overrides the *.html rule above)
