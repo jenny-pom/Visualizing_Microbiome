@@ -48,9 +48,9 @@ with tab_krona:
 
     # 2. MAP CHOICE TO FILE: Map the dropdown names to your actual filenames
     sample_to_file = {
-        "SRR30914511 (Slovakia)": "SRR30914511.html",
-        "SRR34737771 (Germany - Mine Drainage)": "SRR34737771.html",
-        "SRR5169068 (Germany - Short Reads)": "SRR5169068.html"
+        "SRR34737771 (Slovakia)": "SRR34737771.html",
+        "SRR30914511 (United Kingdom)": "SRR30914511.html",
+        "SRR5169068 (Germany)": "SRR5169068.html"
     }
     
     selected_filename = sample_to_file[sample_choice]
