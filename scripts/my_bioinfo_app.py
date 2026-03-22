@@ -40,20 +40,29 @@ with tab_krona:
     The nested circles represent the hierarchical nature of life, allowing you to zoom from broad Domains down to specific lineages.
     """)
     
-    # 1. ADD SELECTBOX: Let the user choose which sample to see
+    # 1. FIXED: These options now match the dictionary keys below EXACTLY.
+    options = [
+        "SRR30914511 (United Kingdom)", 
+        "SRR34737771 (Slovakia)", 
+        "SRR5169068 (Germany)"
+    ]
+
     sample_choice = st.selectbox(
         "Select a specific European mine sample to visualize:",
-        ["SRR30914511 (Slovakia)", "SRR34737771 (Germany - Mine Drainage)", "SRR5169068 (Germany - Short Reads)"]
+        options
     )
 
-    # 2. MAP CHOICE TO FILE: Map the dropdown names to your actual filenames
+    # 2. FIXED: Keys match the 'options' list to prevent KeyError.
     sample_to_file = {
-        "SRR34737771 (Slovakia)": "SRR34737771.html",
         "SRR30914511 (United Kingdom)": "SRR30914511.html",
+        "SRR34737771 (Slovakia)": "SRR34737771.html",
         "SRR5169068 (Germany)": "SRR5169068.html"
     }
     
+    # Retrieve the filename from the dictionary based on the user's choice
     selected_filename = sample_to_file[sample_choice]
+    
+    # Path to the Krona HTML files
     krona_path = f"results/taxonomy/krona_html/{selected_filename}"
 
     # 3. OPEN THE FILE: Read and display the chosen one
@@ -83,7 +92,6 @@ with tab_stats:
     col1, col2 = st.columns(2)
     with col1: 
         st.subheader("Samples per Country")
-        # Check if file exists before showing to avoid error crashes
         if os.path.exists("results/vis/task2_country_distribution.png"):
             st.image("results/vis/task2_country_distribution.png")
     with col2:
